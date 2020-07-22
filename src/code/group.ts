@@ -21,7 +21,7 @@ class BorderFrame {
   }
 
   get allBorder(): LineNode[] {
-    if (this.group) {
+    if (this.group) {      
       return this.group.children.filter(isBorderLine)
     } else {
       return []
@@ -34,9 +34,10 @@ class BorderFrame {
     }
     const border = {}
     for (const line of this.allBorder) {
-      border[line.id] = line.name
+      border[line.id] = { 0 : line.name ,1 : line.strokeWeight}   
     }
     return border
+    
   }
 
   initGroup(lines: LineNode[]): void {
@@ -51,7 +52,7 @@ class BorderFrame {
 
   addBorder(position: Pos, weight = 1): LineNode {
     const line = figma.createLine()
-    line.name = position
+    line.name = position    
     line.strokeWeight = weight
 
     switch (position) {
@@ -97,7 +98,7 @@ class BorderFrame {
     }
     line.setRelaunchData({ edit: '' })
     line.setPluginData('type', 'border')
-    line.setPluginData('position', position)
+    line.setPluginData('position', JSON.stringify({0: position, 1: line.strokeWeight }))
     this.node.appendChild(line)
     if (this.group) {
       this.group.appendChild(line)
@@ -113,7 +114,7 @@ class BorderFrame {
       if (position === line.name) {
         ids.push(line.id)
       }
-    }
+    }    
     return ids
   }
 
@@ -121,6 +122,11 @@ class BorderFrame {
     this.getBorder(position).forEach(id => {
       figma.getNodeById(id).remove()
     })
+  }
+  delBorderID(ids: Array<string>): void {
+    ids.forEach(id => {
+      figma.getNodeById(id).remove()
+    })    
   }
 
   toggleBorder(position: Pos, weight = 1): void {
